@@ -1,0 +1,17 @@
+{ // Copy example.config.jsonc -> config.jsonc and edit there!
+    "rcon": {
+        "address": "127.0.0.1:5000", // Rcon server address.
+        "password": "password", // Password to rcon server.
+        "ratelimit": 10 // How many requests to the rcon server it can make a second.
+    },
+
+    "watchdog": {
+        "default_interval": 10, // All watchdog commands will run every 10 seconds + rcon.ratelimit
+        "command_interval_override": { // Want a specific command to run faster? No problem!
+            "chatlog": 30, // chatlog will run once every 30 seconds instead of 10 seconds.
+            "playerlist": 5 // playlist will run once every 5 seconds instead of 10 seconds.
+        }
+    },
+
+    "database_url": "./database.sqlite" // url for database
+}
