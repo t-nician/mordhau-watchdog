@@ -8,4 +8,9 @@ async def _(result: mcon.Command):
     pass
 
 
+@watchdog.command("chatlog")
+async def _(result: mcon.Command):
+    pass
+
+
 watchdog.start()

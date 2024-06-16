@@ -1,12 +1,17 @@
+from mcon.command import Command
+
+
 class Watchdog:
-    def __init__(self, address: str, password: str):
-        pass
-    
-    def command(func: (), str: str):
-        print(str, func)
-        def wrapper(*args, **kwargs):
-            return func(*args, **kwargs)
+    def __init__(self, address: str, password: str, ratelimit: int):
+        self.listeners: dict[str, (Command)] = {}
         
     
-    def start():
+    def command(self, str: str):
+        def wrapper(func: (Command)):
+            self.listeners[str] = func
+            return func
+        return wrapper
+        
+    
+    def start(self):
         pass
