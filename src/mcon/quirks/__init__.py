@@ -1,0 +1,1 @@
+from mcon.quirks import mordhau
