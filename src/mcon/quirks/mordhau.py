@@ -7,11 +7,23 @@ from mcon.quirks.playfab import PlayfabPlayer
 @dataclass
 class MordhauPlayer(PlayfabPlayer):
     team: str = field(default="")
+    message: str = field(default="")
+
+
+def is_mordhau_player_in_list(playfab: str, list: list[MordhauPlayer]) -> bool:
+    for player in list:
+        if player.playfab_id == playfab:
+            return True
+    return False
 
 
 @dataclass
 class ChatlogCommand(Command):
-    args=field(default_factory=lambda: ["18"])
+    args: list[str] = field(default_factory=lambda: list["18"])
+    result: list[MordhauPlayer] = field(default_factory=list)
+    
+    def complete(self, data: str):
+        self.result = data
 
 
 @dataclass
@@ -21,7 +33,7 @@ class PlayerlistCommand(Command):
     
     def string_to_mordhau_player(player_str: str) -> MordhauPlayer:
         """
-        player_str example: "000000000000000, t-nician, 1 ms, team 0"
+        player_str example: "000000000000000, t-nician, 1 ms, team 0\n"
         """
         player_str.removesuffix("\n")
         playfab, name, ping, team = player_str.split(",")
@@ -34,26 +46,43 @@ class PlayerlistCommand(Command):
         
     
     def complete(self, data: str):
-        playerlist = []
-        
-        if data == "There are currently no players present":
+        if len(data) < 38 or data == "There are currently no players present":
             return None
         
-        if data.count("\n") > 1:
-            split_data = data.split("\n")
-            split_data.pop()
+        playerlist = []
+        
+        data = data.split("\n")
+        data.pop()
             
-            for player_str in split_data:
-                playerlist.append(
-                    PlayerlistCommand.string_to_mordhau_player(
-                        player_str
-                    )
-                )
-        else:
+        for player_str in data:
             playerlist.append(
                 PlayerlistCommand.string_to_mordhau_player(
-                    data
+                    player_str
                 )
             )
-        
+
         self.result = playerlist
+        
+        
+    def get_difference(
+        self, 
+        playerlist: list[MordhauPlayer]
+    ) -> tuple[list[MordhauPlayer], list[MordhauPlayer]]:
+        """
+        returns two lists.
+        
+        first list are people that joined.
+        second list are people that left.
+        """
+
+        joiners, leavers = [], []
+        
+        for player in self.result:
+            if not is_mordhau_player_in_list(player.playfab_id, playerlist):
+                joiners.append(player)
+        
+        for player in playerlist:
+            if not is_mordhau_player_in_list(player.playfab_id, self.result):
+                leavers.append(player)
+        
+        return joiners, leavers
