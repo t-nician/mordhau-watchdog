@@ -4,7 +4,7 @@ import time
 watchdog = mcon.from_config("./config.jsonc")
 
 
-playerlist_stamps: [str, int] = {}
+playerlist_stamps: dict[str, int] = {}
 
 def __log_time(playfab, join_time, leave_time):
     print(playfab, "played for", leave_time - join_time, "seconds")
