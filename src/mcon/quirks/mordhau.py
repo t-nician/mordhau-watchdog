@@ -10,11 +10,19 @@ class MordhauPlayer(PlayfabPlayer):
 
 
 @dataclass
+class ChatlogCommand(Command):
+    args=field(default_factory=lambda: ["18"])
+
+
+@dataclass
 class PlayerlistCommand(Command):
     name: str = field(default="playerlist")
     result: list[MordhauPlayer] = field(default_factory=list)
     
-    def __player_str_to_mordhau_player(player_str: str) -> MordhauPlayer:
+    def string_to_mordhau_player(player_str: str) -> MordhauPlayer:
+        """
+        player_str example: "000000000000000, t-nician, 1 ms, team 0"
+        """
         player_str.removesuffix("\n")
         playfab, name, ping, team = player_str.split(",")
         return MordhauPlayer(
@@ -37,13 +45,13 @@ class PlayerlistCommand(Command):
             
             for player_str in split_data:
                 playerlist.append(
-                    PlayerlistCommand.__player_str_to_mordhau_player(
+                    PlayerlistCommand.string_to_mordhau_player(
                         player_str
                     )
                 )
         else:
             playerlist.append(
-                PlayerlistCommand.__player_str_to_mordhau_player(
+                PlayerlistCommand.string_to_mordhau_player(
                     data
                 )
             )

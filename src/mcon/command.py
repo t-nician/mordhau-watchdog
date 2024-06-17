@@ -8,5 +8,5 @@ class Command:
     
     args: list[str] = field(default_factory=list)
     
-    def complete(self, data: str): # 
-        pass
+    def complete(self, data: str):
+        self.result = data

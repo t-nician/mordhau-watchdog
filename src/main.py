@@ -1,9 +1,27 @@
-import mcon
 import time
 
-pretend_result = "4516E562C105713E, Ikea, 72 ms, team 0\n"#4516E562CZ05713E, Ga, 72 ms, team 0\n"
+from mcon.command import Command
+from mcon.watchdog import Watchdog
 
-test = mcon.quirks.mordhau.PlayerlistCommand()
-test.complete(pretend_result)
+from mcon.quirks.mordhau import MordhauPlayer, PlayerlistCommand, ChatlogCommand
 
-print(test.result)
+
+watchdog = Watchdog()
+
+
+@watchdog.command(ChatlogCommand, interval_seconds=1)
+def chatlog_monitor(command: ChatlogCommand):
+    print(command.result)
+
+
+@watchdog.command(PlayerlistCommand, interval_seconds=5)
+def playerlist_monitor(command: PlayerlistCommand):
+    print(command.result)
+    
+
+@watchdog.command(Command("stats"), interval_seconds=10)
+def stats_monitor(command: Command):
+    print(command.result)
+    
+    
+watchdog.start()
