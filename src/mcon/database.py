@@ -11,7 +11,7 @@ class BaseModel(peewee.Model):
         
 class Playtime(BaseModel):
     playfab_id = peewee.TextField(index=True, unique=True, primary_key=True)
-    playtime = peewee.IntegerField(default=0)
+    playtime = peewee.FloatField(default=0)
 
 
 TABLES = [Playtime]
