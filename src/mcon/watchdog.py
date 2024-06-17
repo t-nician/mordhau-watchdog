@@ -25,7 +25,6 @@ class Watchdog:
     commands: list[CommandAssignment] = field(default_factory=list)
     
     def command(self, command: Command, interval_seconds: int = 5):
-        print(command)
         def wrapper(callback: (Command)):
             self.commands.append(
                 CommandAssignment(
@@ -47,15 +46,15 @@ class Watchdog:
                 if command_assignment.interval >= command_assignment.threshold:
                     command_assignment.interval = 0
                     
-                    complmete_command = replace(command_assignment.command)
-                    complmete_command.complete(
+                    executed_command = replace(command_assignment.command)
+                    executed_command.complete(
                         self.execute_rcon(
                             command_assignment.command.name, 
                             command_assignment.command.args
                         )
                     )
                     
-                    command_assignment.callback(complmete_command)                    
+                    command_assignment.callback(executed_command)                    
                 else:
                     command_assignment.interval += 1
             
