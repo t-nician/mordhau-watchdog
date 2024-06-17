@@ -10,10 +10,6 @@ from mcon.quirks.mordhau import MordhauPlayer, PlayerlistCommand, ChatlogCommand
 
 watchdog = Watchdog()
 
-#@watchdog.command(ChatlogCommand(), interval_seconds=1)
-#def chatlog_monitor(command: ChatlogCommand):
-#    print("chatlog", command.result)
-
 
 __last_player_list: list[MordhauPlayer] = []
 @watchdog.command(PlayerlistCommand(), interval_seconds=5)
@@ -31,11 +27,6 @@ def playerlist_monitor(command: PlayerlistCommand):
         print(player.playfab_id, player.name, "has left!")
     
     __last_player_list = command.result
-    
-
-#@watchdog.command(Command("stats"), interval_seconds=10)
-#def stats_monitor(command: Command):
-#    print("stats", command.result)
     
     
 watchdog.start()
