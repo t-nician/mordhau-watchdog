@@ -7,8 +7,8 @@
     "watchdog": {
         "command_interval": 10, // All watchdog commands will run every 10 seconds + rcon.ratelimit
         "command_interval_override": { // Want a specific command to run faster? No problem!
-            "chatlog": 30, // chatlog will run once every 30 seconds instead of 10 seconds.
-            "playerlist": 5 // playlist will run once every 5 seconds instead of 10 seconds.
+            //"chatlog": 30, // chatlog will run once every 30 seconds instead of 10 seconds.
+            //"playerlist": 5 // playlist will run once every 5 seconds instead of 10 seconds.
         }
     },
 
