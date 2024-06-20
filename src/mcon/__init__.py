@@ -8,10 +8,9 @@ def from_config(config_path: str) -> Watchdog:
         config = json5.loads(file.read())
 
         watchdog = Watchdog(
-            address=config["rcon"]["address"],
+            host=config["rcon"]["host"],
+            port=config["rcon"]["port"],
             password=config["rcon"]["password"],
-            interval=config["watchdog"]["command_interval"],
-            interval_overrides=config["watchdog"]["command_interval_override"]
         )
         
         return watchdog

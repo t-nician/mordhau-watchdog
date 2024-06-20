@@ -1,1 +1,1 @@
-from mcon.quirks import mordhau
+from mcon.quirks import mordhau, playfab

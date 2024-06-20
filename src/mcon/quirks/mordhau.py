@@ -1,3 +1,5 @@
+import time
+
 from dataclasses import dataclass, field
 
 from mcon.command import Command
@@ -7,7 +9,6 @@ from mcon.quirks.playfab import PlayfabPlayer
 @dataclass
 class MordhauPlayer(PlayfabPlayer):
     team: str = field(default="")
-    message: str = field(default="")
 
 
 def is_mordhau_player_in_list(playfab: str, list: list[MordhauPlayer]) -> bool:
@@ -15,15 +16,6 @@ def is_mordhau_player_in_list(playfab: str, list: list[MordhauPlayer]) -> bool:
         if player.playfab_id == playfab:
             return True
     return False
-
-
-@dataclass
-class ChatlogCommand(Command):
-    args: list[str] = field(default_factory=lambda: list["18"])
-    result: list[MordhauPlayer] = field(default_factory=list)
-    
-    def complete(self, data: str):
-        self.result = data
 
 
 @dataclass
@@ -86,3 +78,43 @@ class PlayerlistCommand(Command):
                 leavers.append(player)
         
         return joiners, leavers
+    
+
+@dataclass
+class Chatlog:
+    player: MordhauPlayer
+    message: str
+    channel: str
+    timestamp: int
+
+
+@dataclass
+class ChatlogCommand(Command):
+    name: str = field(default="chatlog")
+    args: list[str] = field(default_factory=lambda: ["18"])
+    result: list[Chatlog] = field(default_factory=list)
+    
+    def complete(self, data: str):
+        if data == "No messages found\n":
+            return None
+        
+        raw_messages = data.split("\n")
+        raw_messages.pop()
+        
+        for raw_message in raw_messages:
+            playfab, name, channel, *message = raw_message.split(" ")            
+            message = ''.join(message)
+            
+            self.result.append(
+                Chatlog(
+                    player=MordhauPlayer(
+                        name=name.removesuffix(","),
+                        playfab_id=playfab,
+                        ping="",
+                        team=""
+                    ),
+                    message=message,
+                    channel=channel,
+                    timestamp=time.time()
+                )
+            )

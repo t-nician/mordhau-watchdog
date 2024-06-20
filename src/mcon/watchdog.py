@@ -23,6 +23,7 @@ class Watchdog:
     
     password: str = field(default="")
     commands: list[CommandAssignment] = field(default_factory=list)
+    client: None | Client = field(default=None)
     
     def command(self, command: Command, interval_seconds: int = 5):
         def wrapper(callback: (Command)):
@@ -36,26 +37,25 @@ class Watchdog:
         return wrapper
     
     
-    def execute_rcon(self, command: str, args: list[str]) -> str:
-        return "000000000000002, t-nician, 1 ms, team 0\n"
-    
-    
     def start(self):
-        while True:
-            for command_assignment in self.commands:
-                if command_assignment.interval >= command_assignment.threshold:
-                    command_assignment.interval = 0
-                    
-                    executed_command = replace(command_assignment.command)
-                    executed_command.complete(
-                        self.execute_rcon(
-                            command_assignment.command.name, 
-                            command_assignment.command.args
-                        )
-                    )
-                    
-                    command_assignment.callback(executed_command)                    
-                else:
-                    command_assignment.interval += 1
+        with Client(self.host, self.port, passwd=self.password) as client:
+            self.client = client
             
-            time.sleep(0.5)
+            while True:
+                for command_assignment in self.commands:
+                    if command_assignment.interval >= command_assignment.threshold:
+                        command_assignment.interval = 0
+                        
+                        executed_command = replace(command_assignment.command)
+                        executed_command.complete(
+                            client.run(
+                                command_assignment.command.name, 
+                                *command_assignment.command.args
+                            )
+                        )
+                        
+                        command_assignment.callback(executed_command)                    
+                    else:
+                        command_assignment.interval += 1
+                
+                time.sleep(0.5)

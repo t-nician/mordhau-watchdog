@@ -1,6 +1,7 @@
 { // Copy example.config.jsonc -> config.jsonc and edit there!
-    "rcon": {
-        "address": "127.0.0.1:5000", // Rcon server address.
+   "rcon": {
+        "host": "127.0.0.1", // Rcon ip.
+        "port": 5000, // Rcon port.
         "password": "password" // Password to rcon server.
     },
 
