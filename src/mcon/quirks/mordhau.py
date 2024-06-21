@@ -35,11 +35,14 @@ class Chatlog(PlayfabPlayer):
 
 
 previous_playerlist: list[MordhauPlayer] = []
+chat_history: list[Chatlog] = []
+
 
 def player_is_in_list(list, player):
     for other in list:
         if other.id == player.id:
             return True
+
 
 @dataclass
 class MordhauSession(Session):
@@ -63,6 +66,17 @@ class MordhauSession(Session):
     
     
     def prestart(self):
+        @self.watchdog.command(Command("chatlog", args=["5"]), interval_seconds=1)
+        def chatlog(command: Command):
+            global chat_history
+            # WAHH
+            difference = len(chat_history) - len(command.result)
+            
+            
+                
+                
+            
+        
         @self.watchdog.command(Command("playerlist"), interval_seconds=1)
         def playerlist(command: Command):
             global previous_playerlist
@@ -90,7 +104,6 @@ class MordhauSession(Session):
                         PlayerType.PLAYER
                     )
                 )
-            
 
             for player in current_playerlist:
                 if not player_is_in_list(previous_playerlist, player):
