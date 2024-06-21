@@ -66,15 +66,14 @@ class MordhauSession(Session):
     
     
     def prestart(self):
-        @self.watchdog.command(Command("chatlog", args=["5"]), interval_seconds=1)
+        @self.watchdog.command(Command("chatlog", args=["5"]), interval_seconds=5)
         def chatlog(command: Command):
             global chat_history
             # WAHH
-            difference = len(chat_history) - len(command.result)
+            # difference = len(chat_history) - len(command.result)
+            #print(command.result)
+            #print(self.watchdog.client.run("chatlog", "5"))
             
-            
-                
-                
             
         
         @self.watchdog.command(Command("playerlist"), interval_seconds=1)

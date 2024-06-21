@@ -41,6 +41,9 @@ class Watchdog:
         with Client(self.host, self.port, passwd=self.password) as client:
             self.client = client
             
+            print(self.client.run("listen", "chat"))
+            print(self.client.read())
+            
             while True:
                 for command_assignment in self.commands:
                     if command_assignment.interval >= command_assignment.threshold:
