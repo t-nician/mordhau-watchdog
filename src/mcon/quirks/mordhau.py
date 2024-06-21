@@ -36,6 +36,11 @@ class Chatlog(PlayfabPlayer):
 
 previous_playerlist: list[MordhauPlayer] = []
 
+def player_is_in_list(list, player):
+    for other in list:
+        if other.id == player.id:
+            return True
+
 @dataclass
 class MordhauSession(Session):
     playerlist: list[MordhauPlayer] = field(default_factory=list)
@@ -58,13 +63,13 @@ class MordhauSession(Session):
     
     
     def prestart(self):
-        @self.watchdog.command(Command("playerlist"), interval_seconds=5)
+        @self.watchdog.command(Command("playerlist"), interval_seconds=1)
         def playerlist(command: Command):
             global previous_playerlist
             
-            print(command.result)
-            
             if command.result == "There are currently no players present":
+                for player in previous_playerlist: 
+                    self.__fire_event(EventType.PLAYER_LEAVE, player)
                 previous_playerlist = []
                 return None
             
@@ -86,13 +91,13 @@ class MordhauSession(Session):
                     )
                 )
             
-            
+
             for player in current_playerlist:
-                if previous_playerlist.count(player) == 0:
+                if not player_is_in_list(previous_playerlist, player):
                     self.__fire_event(EventType.PLAYER_JOIN, player)
             
-            for player in previous_playerlist:
-                if current_playerlist.count(player) == 0:
+            for player in previous_playerlist: 
+                if not player_is_in_list(current_playerlist, player):
                     self.__fire_event(EventType.PLAYER_LEAVE, player)
             
             previous_playerlist = current_playerlist
