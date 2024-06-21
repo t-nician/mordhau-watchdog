@@ -118,3 +118,32 @@ class ChatlogCommand(Command):
                     timestamp=time.time()
                 )
             )
+
+
+@dataclass
+class CommandAssignment:
+    callback: (tuple[MordhauPlayer, ...]) = field(default=lambda: ())
+    command: Command = field(default_factory=Command)
+
+
+@dataclass
+class ChatCommandHandler:
+    name: str = field(default="chatlog")
+    history: list[Chatlog] = field(default_factory=list)
+    commands: list[CommandAssignment] = field(default_factory=list)
+    
+    
+    def process(self, chatlogs: list[Chatlog]):
+        pass
+    
+    
+    def command(self, command: Command, interval_seconds: int = 5):
+        def wrapper(callback: (tuple[MordhauPlayer, ...])):
+            self.commands.append(
+                CommandAssignment(
+                    callback=callback, 
+                    command=command, 
+                    threshold=interval_seconds
+                )
+            )
+        return wrapper
