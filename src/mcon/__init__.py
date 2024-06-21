@@ -1,7 +1,8 @@
 import json5
 
+
 from mcon.watchdog import Watchdog
-from mcon import quirks
+
 
 def from_config(config_path: str) -> Watchdog:
     with open(config_path, "r") as file:

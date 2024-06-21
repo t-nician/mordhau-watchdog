@@ -1,159 +1,51 @@
 import time
 
+from enum import Enum
 from dataclasses import dataclass, field
 
-from mcon.command import Command
+from mcon.session import Session
+from mcon.watchdog import Command
+
 from mcon.quirks.playfab import PlayfabPlayer
+
+
+
+class PlayerType(Enum):
+    ADMIN = "admin"
+    PLAYER = "player"
 
 
 @dataclass
 class MordhauPlayer(PlayfabPlayer):
     team: str = field(default="")
-
-
-def is_mordhau_player_in_list(playfab: str, list: list[MordhauPlayer]) -> bool:
-    for player in list:
-        if player.playfab_id == playfab:
-            return True
-    return False
-
-
-@dataclass
-class PlayerlistCommand(Command):
-    name: str = field(default="playerlist")
-    result: list[MordhauPlayer] = field(default_factory=list)
+    ping: str = field(default="")
     
-    def string_to_mordhau_player(player_str: str) -> MordhauPlayer:
-        """
-        player_str example: "000000000000000, t-nician, 1 ms, team 0\n"
-        """
-        player_str.removesuffix("\n")
-        playfab, name, ping, team = player_str.split(",")
-        return MordhauPlayer(
-            name=name.removeprefix(" "),
-            playfab_id=playfab,
-            ping=ping.removeprefix(" "),
-            team=team.removeprefix(" ")
-        )
-        
-    
-    def complete(self, data: str):
-        if len(data) < 38 or data == "There are currently no players present":
-            return None
-        
-        playerlist = []
-        
-        data = data.split("\n")
-        data.pop()
-            
-        for player_str in data:
-            playerlist.append(
-                PlayerlistCommand.string_to_mordhau_player(
-                    player_str
-                )
-            )
-
-        self.result = playerlist
-        
-        
-    def get_difference(
-        self, 
-        playerlist: list[MordhauPlayer]
-    ) -> tuple[list[MordhauPlayer], list[MordhauPlayer]]:
-        """
-        returns two lists.
-        
-        first list are people that joined.
-        second list are people that left.
-        """
-
-        joiners, leavers = [], []
-        
-        for player in self.result:
-            if not is_mordhau_player_in_list(player.playfab_id, playerlist):
-                joiners.append(player)
-        
-        for player in playerlist:
-            if not is_mordhau_player_in_list(player.playfab_id, self.result):
-                leavers.append(player)
-        
-        return joiners, leavers
+    type: PlayerType = field(default=PlayerType.PLAYER)
     
 
 @dataclass
-class Chatlog:
-    player: MordhauPlayer
-    message: str
-    channel: str
-    timestamp: int
+class Chatlog(PlayfabPlayer):
+    player: MordhauPlayer = field(default_factory=MordhauPlayer)
+    
+    message: str = field(default="")
+    timestamp: int = field(default=0)
 
 
 @dataclass
-class ChatlogCommand(Command):
-    name: str = field(default="chatlog")
-    args: list[str] = field(default_factory=lambda: ["18"])
-    result: list[Chatlog] = field(default_factory=list)
+class MordhauSession(Session):
+    playerlist: list[MordhauPlayer] = field(default_factory=list)
+    chatlogs: list[Chatlog] = field(default_factory=list)
     
-    def complete(self, data: str):
-        if data == "No messages found\n":
-            return None
-        
-        raw_messages = data.split("\n")
-        raw_messages.pop()
-        
-        for raw_message in raw_messages:
-            playfab, name, channel, *message = raw_message.split(" ")            
-            message = ''.join(message)
-            
-            self.result.append(
-                Chatlog(
-                    player=MordhauPlayer(
-                        name=name.removesuffix(","),
-                        playfab_id=playfab,
-                        ping="",
-                        team=""
-                    ),
-                    message=message,
-                    channel=channel,
-                    timestamp=time.time()
-                )
-            )
-
-
-@dataclass
-class CommandAssignment:
-    callback: (tuple[MordhauPlayer, ...]) = field(default=lambda: ())
-    command: Command = field(default_factory=Command)
-
-
-@dataclass
-class ChatCommandHandler:
-    name: str = field(default="chatlog")
-    history: list[Chatlog] = field(default_factory=list)
-    commands: list[CommandAssignment] = field(default_factory=list)
+    chat_commands: dict[str, (tuple[MordhauPlayer, str])] = field(default_factory=list)
     
-    
-    def process(self, chatlogs: list[Chatlog]):
-        for history_index, history_log in enumerate(self.history):
-            
-            no_match = False
-            
-            for chatlog_index, log in enumerate(chatlogs):
-                if no_match:
-                    pass
-                
-                if log.player.playfab_id != history_log.player.playfab_id:
-                    no_match = True
-            
-            self.history.append(log)
-
-    
-    def command(self, command: Command, interval_seconds: int = 5):
-        def wrapper(callback: (tuple[MordhauPlayer, ...])):
-            self.commands.append(
-                CommandAssignment(
-                    callback=callback, 
-                    command=command
-                )
-            )
+    def chat_command(self, command: str, args: int = 0):
+        def wrapper(callback: (tuple[MordhauPlayer, str])):
+            print(callback)
         return wrapper
+    
+    
+    def prestart(self):
+        @self.watchdog.command(Command("playerlist"), interval_seconds=1)
+        def playerlist(command: Command):
+            print(command.result)
+    
