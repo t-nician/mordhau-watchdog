@@ -134,16 +134,26 @@ class ChatCommandHandler:
     
     
     def process(self, chatlogs: list[Chatlog]):
-        pass
-    
+        for history_index, history_log in enumerate(self.history):
+            
+            no_match = False
+            
+            for chatlog_index, log in enumerate(chatlogs):
+                if no_match:
+                    pass
+                
+                if log.player.playfab_id != history_log.player.playfab_id:
+                    no_match = True
+            
+            self.history.append(log)
+
     
     def command(self, command: Command, interval_seconds: int = 5):
         def wrapper(callback: (tuple[MordhauPlayer, ...])):
             self.commands.append(
                 CommandAssignment(
                     callback=callback, 
-                    command=command, 
-                    threshold=interval_seconds
+                    command=command
                 )
             )
         return wrapper

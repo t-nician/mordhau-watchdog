@@ -15,6 +15,7 @@ watchdog: Watchdog = from_config("./config.jsonc")
 
 __last_player_list: list[MordhauPlayer] = []
 __timestamp_list: dict[str, float] = {}
+
 @watchdog.command(PlayerlistCommand(), interval_seconds=1)
 def playerlist_monitor(command: PlayerlistCommand):
     global __last_player_list, __timestamp_list
@@ -56,6 +57,7 @@ def chatlog_monitor(command: ChatlogCommand):
                 __last_player_playtime = chatlog.player"""
 
 
+
 # INGAME CHAT COMMANDS
 chatcommand_handler = ChatCommandHandler()
 
@@ -64,11 +66,12 @@ def chatcommand_playtime(player: MordhauPlayer):
     pass
 
 
-@watchdog.command(ChatlogCommand(), interval_seconds=1)
+@watchdog.command(ChatlogCommand(), interval_seconds=2)
 def chatcommand_monitor(command: ChatlogCommand):
     global chatcommand_handler
     
     chatcommand_handler.process(command.result)
+    print(len(chatcommand_handler.history))
     
 
 watchdog.start()
