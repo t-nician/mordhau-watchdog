@@ -1,6 +1,19 @@
-import time
+from mcon import from_config
 
-from dataclasses import replace
+from mcon.watchdog import Watchdog, BroadcastType
 
-#from mcon import from_config
 
+watchdog: Watchdog = from_config("./config.jsonc")
+
+
+@watchdog.broadcast_transformer
+def transformer(packet):
+    return BroadcastType.UNKNOWN, "Hello there!"
+
+
+@watchdog.on_broadcast(BroadcastType.UNKNOWN)
+def on_chat(data):
+    print("on_chat", data)
+
+
+watchdog.start()
