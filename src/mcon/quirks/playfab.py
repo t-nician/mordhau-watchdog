@@ -9,3 +9,7 @@ class PlayfabPlayer:
     def __eq__(self, other) -> bool:
         assert type(other) == PlayfabPlayer, f"expected a PlayfabPlayer! Got {other}"
         return self.id == other.id
+    
+    def __add__(self, other) -> bool:
+        assert type(other) == PlayfabPlayer, f"expected a PlayfabPlayer! Got {other}"
+        return self.id == other.id
