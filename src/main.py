@@ -26,11 +26,17 @@ def presence(mordhau_player: MordhauPlayer, is_joining):
         player_str = player_str + "is joining!"
         player_timestamps[mordhau_player.id] = time.time()
     else:
-        playtime = time.time() - player_timestamps[mordhau_player.id]
         
-        del player_timestamps[mordhau_player.id]
+        playtime = 0
+        timestamp = player_timestamps.get(mordhau_player.id)
         
-        player_str = player_str + f"is leaving!\nPlayed for {playtime} seconds..."
+        if timestamp is not None:
+            playtime = time.time() - timestamp
+            del player_timestamps[mordhau_player.id]
+        else:
+            playtime = 0
+        
+        player_str = player_str + f"is leaving! Session {int(playtime)} seconds..."
     
     print(player_str)
 
