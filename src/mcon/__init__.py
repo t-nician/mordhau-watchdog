@@ -8,9 +8,9 @@ def from_config(config_path: str) -> Watchdog:
         config = json5.loads(file.read())
 
         watchdog = Watchdog(
-            host=config["rcon"]["host"],
-            port=config["rcon"]["port"],
-            passwd=config["rcon"]["password"],
+            host=config["host"],
+            port=config["port"],
+            passwd=config["password"],
         )
         
         return watchdog
