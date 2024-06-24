@@ -14,3 +14,4 @@ def from_config(config_path: str) -> Watchdog:
         )
         
         return watchdog
+    
