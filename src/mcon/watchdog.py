@@ -26,8 +26,8 @@ class Watchdog:
     passwd: str = field(default="")
     
     listeners: list[BroadcastListener] = field(default_factory=list)
-    async_execution: list[tuple[str, str]] = field(default_factory=list)
-    transformer: () = field(default=lambda *_: _)
+    queued_commands: list[tuple[str, str]] = field(default_factory=list)
+    transformer: ( ) = field(default=lambda *_: _)
 
     client: None | Client = field(default=None)
     
@@ -49,9 +49,12 @@ class Watchdog:
     def __broadcast_loop(self):
         with Client(self.host, self.port, passwd=self.passwd) as client:
             self.client = client
-            self.client.timeout = 1
+            self.client.timeout = 0.5
             
             while True:
+                
+                while len(self.queued_commands) > 0:
+                    client.run(*self.queued_commands.pop())
                 
                 broadcast_packet = None
                 
@@ -59,9 +62,6 @@ class Watchdog:
                     broadcast_packet = client.read()
                 except:
                     pass
-                
-                while len(self.async_execution) > 0:
-                    client.run(*self.async_execution.pop())
                 
                 if broadcast_packet is None:
                     continue
@@ -71,24 +71,9 @@ class Watchdog:
                 for listener in self.listeners:
                     if listener.type == broadcast_type:
                         listener.callback(*data)
-    
-    async def listen_async(self, command: str, *args: list[str]):
-        self.async_execution.append((command, *args))
-        
-        await rcon(
-            command, 
-            *args, 
-            host=self.host, 
-            port=self.port, 
-            passwd=self.passwd
-        )
-    
-    def __command_watchdog(self):
-        pass
 
     def start(self):
-        run(self.__broadcast_loop())
-        self.__command_watchdog()
+        self.__broadcast_loop()
         
         
         

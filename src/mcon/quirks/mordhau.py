@@ -71,6 +71,6 @@ class MordhauSession:
                 return EventType.PLAYER_CHAT, mordhau_player, channel, processed_message
         
         for type in types:
-            run(self.watchdog.listen_async("listen", type.value))
+            self.watchdog.queued_commands.append(("listen", type.value))
         
         self.watchdog.start()
