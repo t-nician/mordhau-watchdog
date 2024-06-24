@@ -9,16 +9,20 @@ mordhau = MordhauSession(
 
 
 @mordhau.watchdog.on_broadcast(EventType.PLAYER_CHAT)
-def chat(mordhau_player, channel, message):
-    print("player", mordhau_player)
-    print("channel", channel)
-    print("message", message)
+def chat(mordhau_player: MordhauPlayer, channel, message):
+    print(f"{mordhau_player.id} {mordhau_player.name} said '{message}'")
 
 
 @mordhau.watchdog.on_broadcast(EventType.PLAYER_PRESENCE)
-def presence(mordhau_player, is_joining):
-    print("player", mordhau_player)
-    print("is_joining", is_joining)
+def presence(mordhau_player: MordhauPlayer, is_joining):
+    player_str = f"{mordhau_player.id} {mordhau_player.name} "
+    
+    if is_joining:
+        player_str = player_str + "is joining!"
+    else:
+        player_str = player_str + "is leaving!"
+    
+    print(player_str)
 
 
 mordhau.listen(

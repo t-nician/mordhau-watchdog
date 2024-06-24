@@ -45,28 +45,30 @@ class MordhauSession:
             payload_str = packet.payload.decode()
             
             if payload_str.startswith("Login:"):
-                print(payload_str)
-                return EventType.PLAYER_PRESENCE, payload_str[len("Login:")::]
+                timestamp = payload_str[len("Login:")::].split(":")[0].removesuffix(":")
+            
+                result = payload_str[len("Login:") + len(timestamp) + 2::].split(" ")
+
+                mordhau_player = MordhauPlayer(
+                    name=result[0],
+                    id=result[1].removeprefix("(").removesuffix(")")
+                )
+                             
+                return EventType.PLAYER_PRESENCE, mordhau_player, "".join(result[2::]) == "loggedin"
 
             if payload_str.startswith("Chat:"):
                 split = payload_str[len("Chat: ")::].split(",")          
 
-                playfab, name = split[0], split[1]
+                playfab, name = split[0], split[1].removeprefix(" ")
                 mordhau_player = MordhauPlayer(name=name, id=playfab)
                 
                 raw_message = "".join(split[2::]).removeprefix(" ")
                 target_end = raw_message.find(")")
 
                 channel = raw_message[0:target_end + 1]
-                processed_message = raw_message[target_end + 2::]
+                processed_message = raw_message[target_end + 2::].removesuffix("\n")
                 
                 return EventType.PLAYER_CHAT, mordhau_player, channel, processed_message
-        
-        
-        #@self.watchdog.on_broadcast(EventType.PLAYER_CHAT)
-        #def chat(playfab, name, channel, message):
-        #    print("chat payload", payload)
-            
         
         for type in types:
             run(self.watchdog.listen_async("listen", type.value))
