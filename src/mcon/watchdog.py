@@ -38,6 +38,9 @@ class Watchdog:
             return callback(*args, **kwargs)
         return wrapper
     
+    def run(self, command: str, *args: str) -> str:
+        return self.client.run(command, *args)
+    
     def on_broadcast(self, _type: BroadcastType):
         def wrapper(callback):
             self.listeners.append(BroadcastListener(
