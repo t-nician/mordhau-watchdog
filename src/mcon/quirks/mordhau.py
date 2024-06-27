@@ -62,7 +62,7 @@ class MordhauSession:
                 playfab, name = split[0], split[1].removeprefix(" ")
                 mordhau_player = MordhauPlayer(name=name, id=playfab)
                 
-                raw_message = "".join(split[2::]).removeprefix(" ")
+                raw_message = ",".join(split[2::]).removeprefix(" ")
                 target_end = raw_message.find(")")
 
                 channel = raw_message[0:target_end + 1]
