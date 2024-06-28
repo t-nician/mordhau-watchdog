@@ -41,7 +41,6 @@ class MongoDBConnection:
             self.mordhau_database = self.client["mordhau"]
             self.playtime_collection = self.mordhau_database["playtime"]
 
-    
     def get_playtime_data(self, playfab: str) -> PlaytimePlayer | None:
         result = None
         
@@ -63,7 +62,6 @@ class MongoDBConnection:
             one_month=result.get("one_month")
         )
     
-    
     def create_playtime_data(self, playfab: str) -> PlaytimePlayer | None:
         if self.get_playtime_data(playfab) is not None:
             return None
@@ -83,8 +81,6 @@ class MongoDBConnection:
             two_weeks=0,
             one_month=0
         )
-        
-    
     
     def save_playtime_player(self, player: PlaytimePlayer):
         self.playtime_collection.update_one(
@@ -96,7 +92,6 @@ class MongoDBConnection:
                 "one_month": player.one_month
             }}
         )
-        
     
 
 def from_config(path: str) -> MongoDBConnection:
