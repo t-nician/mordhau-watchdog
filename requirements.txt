@@ -3,3 +3,4 @@ fastapi
 peewee
 json5
 rcon
+pymongo
