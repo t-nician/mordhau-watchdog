@@ -52,7 +52,7 @@ class MordhauSession:
                 
                 raw_str = split[1].removeprefix(" ")
                 
-                name = raw_str.removesuffix(") logged out").removesuffix(") logged in")[0:len(raw_str) - 29]
+                name = raw_str.removesuffix(") logged out").removesuffix(") logged in")[0:len(raw_str) - 29].removesuffix(" ")
                 playfab = raw_str[len(raw_str) - 28::].removeprefix("(").removesuffix(") logged out").removesuffix(") logged in")
 
                 mordhau_player = MordhauPlayer(
