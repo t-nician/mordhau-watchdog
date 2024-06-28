@@ -75,6 +75,8 @@ class MordhauSession:
                 processed_message = raw_message[target_end + 2::].removesuffix("\n")
                 
                 return EventType.PLAYER_CHAT, mordhau_player, channel, processed_message
+            
+            return BroadcastType.UNKNOWN
         
         for type in types:
             self.watchdog.queued_commands.append(("listen", type.value))
