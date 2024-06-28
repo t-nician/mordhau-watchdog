@@ -48,13 +48,13 @@ class MordhauSession:
             
             if payload_str.startswith("Login:"):
                 #Login: 2024.06.28-15.04.09: Edentage (8A0461F1C969789C) logged out
-                split = payload_str[len("Login:")::].split(":")#.split(":")[0].removesuffix(":")
+                split = payload_str[len("Login:")::].split(": ")#.split(":")[0].removesuffix(":")
                 stamp = split[0].removesuffix(":")
                 
                 name = split[1][len(stamp)::len(split[1]) - 29]
                 playfab = split[1][len(split[1]) - 29::]
                 
-                print("test", split)
+                print("test", name, playfab)
                 
                 result = payload_str[len("Login:") + len(stamp) + 2::].split(" ")
 
