@@ -47,13 +47,18 @@ class MordhauSession:
             print(payload_str)
             
             if payload_str.startswith("Login:"):
-                timestamp = payload_str[len("Login:")::].split(":")[0].removesuffix(":")
-            
-                result = payload_str[len("Login:") + len(timestamp) + 2::].split(" ")
+                #Login: 2024.06.28-15.04.09: Edentage (8A0461F1C969789C) logged out
+                split = payload_str[len("Login:")::]#.split(":")[0].removesuffix(":")
+                stamp = split[0].removesuffix(":")
+                
+                name = split[1][len(stamp)::len(split[1]) - 29]
+                playfab = split[1][len(split[1]) - 29::]
+                
+                result = payload_str[len("Login:") + len(stamp) + 2::].split(" ")
 
                 mordhau_player = MordhauPlayer(
-                    name=result[0],
-                    id=result[1].removeprefix("(").removesuffix(")")
+                    name=name,
+                    id=playfab.removeprefix("(").removesuffix(")")
                 )
                              
                 return EventType.PLAYER_PRESENCE, mordhau_player, "".join(result[2::]) == "loggedin"
