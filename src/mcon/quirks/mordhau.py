@@ -44,6 +44,8 @@ class MordhauSession:
         def transformer(packet):
             payload_str = packet.payload.decode()
             
+            print(payload_str)
+            
             if payload_str.startswith("Login:"):
                 timestamp = payload_str[len("Login:")::].split(":")[0].removesuffix(":")
             
@@ -56,7 +58,6 @@ class MordhauSession:
                              
                 return EventType.PLAYER_PRESENCE, mordhau_player, "".join(result[2::]) == "loggedin"
 
-            print(payload_str)
             
             if payload_str.startswith("Chat:"):
                 split = payload_str[len("Chat:")::].split(",")          
