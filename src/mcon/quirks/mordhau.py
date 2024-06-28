@@ -43,7 +43,7 @@ class MordhauSession:
         @self.watchdog.broadcast_transformer
         def transformer(packet):
             if packet is None:
-                return BroadcastType.UNKNOWN
+                return BroadcastType.UNKNOWN, None
             
             payload_str = packet.payload.decode()
             
