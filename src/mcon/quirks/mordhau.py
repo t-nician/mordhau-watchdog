@@ -59,9 +59,9 @@ class MordhauSession:
             print(payload_str)
             
             if payload_str.startswith("Chat:"):
-                split = payload_str[len("Chat: ")::].split(",")          
+                split = payload_str[len("Chat:")::].split(",")          
 
-                playfab, name = split[0], split[1].removeprefix(" ")
+                playfab, name = split[0].removeprefix(" "), split[1].removeprefix(" ")
                 mordhau_player = MordhauPlayer(name=name, id=playfab)
                 
                 raw_message = ",".join(split[2::]).removeprefix(" ")
