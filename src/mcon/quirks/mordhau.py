@@ -54,7 +54,7 @@ class MordhauSession:
                 name = split[1][len(stamp)::len(split[1]) - 29]
                 playfab = split[1][len(split[1]) - 29::]
                 
-                print("test", name, playfab)
+                print("test", split)
                 
                 result = payload_str[len("Login:") + len(stamp) + 2::].split(" ")
 
