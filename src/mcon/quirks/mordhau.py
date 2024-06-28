@@ -42,9 +42,10 @@ class MordhauSession:
     def listen(self, *types: list[EventType]):
         @self.watchdog.broadcast_transformer
         def transformer(packet):
-            payload_str = packet.payload.decode()
+            if packet is None:
+                return BroadcastType.UNKNOWN
             
-            #print(payload_str)
+            payload_str = packet.payload.decode()
             
             if payload_str.startswith("Login:"):
                 split = payload_str[len("Login:")::].split(": ")
