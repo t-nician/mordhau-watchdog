@@ -17,11 +17,7 @@ mongo = database.from_config("./config.jsonc")
 
 
 def format_time(seconds) -> tuple[int, int, int, int]:
-    result =  (
-        datetime(1, 1, 1) + timedelta(
-            seconds=seconds
-        )                    
-    )
+    result =  (datetime(1, 1, 1) + timedelta(seconds=seconds))
     return result.day - 1, result.hour, result.minute, result.second
 
 
@@ -32,7 +28,7 @@ def chat(mordhau_player: MordhauPlayer, channel, message):
     if message.startswith(".playtime"):
         global player_timestamps
         
-        playtime_model = mongo.get_playtime_data(mordhau_player.id)
+        playtime_model = mongo.get_playtime_data(mordhau_player.id) or mongo.create_playtime_data(mordhau_player.id)
         
         timestamp = player_timestamps.get(mordhau_player.id)
         session_seconds = timestamp and time.time() - timestamp or 0

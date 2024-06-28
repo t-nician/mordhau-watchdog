@@ -56,6 +56,8 @@ class MordhauSession:
                              
                 return EventType.PLAYER_PRESENCE, mordhau_player, "".join(result[2::]) == "loggedin"
 
+            print(payload_str)
+            
             if payload_str.startswith("Chat:"):
                 split = payload_str[len("Chat: ")::].split(",")          
 

@@ -39,7 +39,15 @@ class Watchdog:
         return wrapper
     
     def run(self, command: str, *args: str) -> str:
-        return self.client.run(command, *args)
+        result = ""
+        
+        try:
+            result = self.client.run(command, *args)
+        except:
+            pass
+        
+        return result
+        #return self.client.run(command, *args)
     
     def on_broadcast(self, _type: BroadcastType):
         def wrapper(callback):
