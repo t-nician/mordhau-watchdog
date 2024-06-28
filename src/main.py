@@ -70,7 +70,6 @@ def presence(mordhau_player: MordhauPlayer, is_joining):
         mordhau_player.id
     ) or database.create_playtime_model(mordhau_player.id)
     
-    
     playtime_model.total_playtime = str(
         int(playtime_model.total_playtime) + playtime
     )
