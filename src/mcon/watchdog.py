@@ -75,7 +75,7 @@ class Watchdog:
                     pass
                 
                 if broadcast_packet is None:
-                    client.run("alive")
+                    self.run("alive")
                     continue
                 
                 broadcast_type, *data = self.transformer(broadcast_packet)
